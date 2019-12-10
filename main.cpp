@@ -27,8 +27,7 @@ Student *head = (Student*)malloc(sizeof(Student));    //  数据记录
 
 const char *fileName = "database.txt";
 //文件操作
-int readToFile(const char *fileName);
-int writeToFile(const char *fileName, const char *fmt);
+void outFile();
 
 void inputData();
 void clear(int tag);
@@ -54,6 +53,7 @@ int main(int argc, char const *argv[]) {
             break;
         cmd(command, parameter);
     }
+    outFile();
     clear(ALL);
     return 0;
 }
@@ -110,6 +110,38 @@ FILE *openFile(){
         return NULL;
     }
     return fp;
+}
+//输出数据信息
+void outFile(){
+    FILE *fp = fopen("database.txt", "w+");
+    if (!fp) {
+        printf("Failed to open file.\n");
+        return;
+    }
+    Student *student = head->next;
+    char info[MAX];
+    memset(info, '\0', sizeof(info));
+
+    fputs("id        name        s1        s2         s3        average\n", fp);
+    while (student != NULL) {
+        structToString(student, info);
+        fputs(info, fp);
+    }
+    fclose(fp);
+
+    fp = fopen("database.bin", "r+b");
+    if (!fp) {
+        printf("Failed to open file.\n");
+        return;
+    }
+    memset(info, '\0', sizeof(info));
+    fputs("id        name        s1        s2         s3        average\n", fp);
+    student = head->next;
+    while (student != NULL) {
+        structToString(student, info);
+        fwrite(info, sizeof(char), strlen(info), fp);
+    }
+    fclose(fp);
 }
 //输入数据信息
 void inputData() {
